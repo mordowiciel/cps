@@ -1,16 +1,52 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# generate sine signal
+# sygnal sinusoidalny
 
-Fs = 8000
-f = 5
-sample = 8000
+f = 1
+t = np.arange(0.0, 3.0, 0.01)
+y = np.sin(2 * f * np.pi * t)
 
-x = np.arange(sample)
-y = np.sin(2 * np.pi * f * x / Fs)
+y = [(np.sin(2 * f * np.pi * i)) for i in t]
+plt.plot(t, y)
 
-plt.plot(x, y)
-plt.xlabel('sample(n)')
-plt.ylabel('voltage(V)')
+plt.xlabel('time (t)')
+plt.ylabel('value (y)')
+plt.title('Sygnal sinusoidalny')
+plt.grid(True)
+plt.show()
+
+# sygnal sinusoidalny wyprostowany jednopolowkowo
+
+f = 1
+t = np.arange(0.0, 3.0, 0.01)
+y = []
+
+for i in t:
+    y_val = np.sin(2 * f * np.pi * i)
+    if y_val < 0:
+        y_val = 0
+    y.append(y_val)
+
+plt.plot(t, y)
+plt.xlabel('time (s)')
+plt.ylabel('voltage (mV)')
+plt.title('voltage (mV) vs. time (sec)')
+plt.grid(True)
+plt.show()
+
+# sygnal sinusoidalny wyprostowany dwupolowkowo
+f = 1
+t = np.arange(0.0, 3.0, 0.01)
+y = []
+
+for i in t:
+    y_val = np.abs(np.sin(2 * f * np.pi * i))
+    y.append(y_val)
+
+plt.plot(t, y)
+plt.xlabel('time (s)')
+plt.ylabel('voltage (mV)')
+plt.title('voltage (mV) vs. time (sec)')
+plt.grid(True)
 plt.show()
