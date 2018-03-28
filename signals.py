@@ -23,7 +23,7 @@ def plot_prostokatny(A, T, kW, t1, d):
     plt.plot(t, y)
     plt.xlabel('time (t)')
     plt.ylabel('value (y)')
-    plt.title('Szum gaussowski')
+    plt.title('Prostokatny')
     plt.grid(True)
     plt.show()
 
@@ -49,7 +49,7 @@ def plot_prostokatny_symetryczny(A, T, kW, t1, d):
     plt.plot(t, y)
     plt.xlabel('time (t)')
     plt.ylabel('value (y)')
-    plt.title('Szum gaussowski')
+    plt.title('Prostokatny symetryczny')
     plt.grid(True)
     plt.show()
 
@@ -76,6 +76,6 @@ def plot_trojkatny(A, T, kW, t1, d):
     plt.plot(t, y)
     plt.xlabel('time (t)')
     plt.ylabel('value (y)')
-    plt.title('Szum gaussowski')
+    plt.title('Trojkatny')
     plt.grid(True)
     plt.show()
