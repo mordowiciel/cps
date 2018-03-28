@@ -1,4 +1,5 @@
 from sines import *
 from szum import *
+from signals import *
 
-szum_gaussowski()
+plot_prostokatny(15, 2, 0.5)
