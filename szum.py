@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def szum_jednostajny():
-    t = np.arange(0.0, 3.0, 0.01)
-    y = np.random.uniform(-1, 1, len(t))
+def szum_jednostajny(A, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
+    y = np.random.uniform(-A, A, len(t))
 
     plt.plot(t, y)
     plt.xlabel('time (t)')
@@ -14,9 +14,9 @@ def szum_jednostajny():
     plt.show()
 
 
-def szum_gaussowski():
-    t = np.arange(0.0, 3.0, 0.01)
-    y = np.random.normal(-1, 1, len(t))
+def szum_gaussowski(A, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
+    y = np.random.normal(-A, A, len(t))
 
     plt.plot(t, y)
     plt.xlabel('time (t)')

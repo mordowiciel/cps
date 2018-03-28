@@ -2,4 +2,4 @@ from sines import *
 from szum import *
 from signals import *
 
-plot_trojkatny(5, 2, 0.5)
+szum_gaussowski(5, 0, 10)

@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_prostokatny(A, T, kW):
-    t = np.arange(0.0, 10.0, 0.01)
+def plot_prostokatny(A, T, kW, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
     y = []
 
     impulse_time = kW * T
@@ -28,8 +28,8 @@ def plot_prostokatny(A, T, kW):
     plt.show()
 
 
-def plot_prostokatny_symetryczny(A, T, kW):
-    t = np.arange(0.0, 10.0, 0.01)
+def plot_prostokatny_symetryczny(A, T, kW, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
     y = []
 
     impulse_time = kW * T
@@ -54,8 +54,8 @@ def plot_prostokatny_symetryczny(A, T, kW):
     plt.show()
 
 
-def plot_trojkatny(A, T, kW):
-    t = np.arange(0.0, 10.0, 0.01)
+def plot_trojkatny(A, T, kW, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
     y = []
 
     impulse_time = kW * T
