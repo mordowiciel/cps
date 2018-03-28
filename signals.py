@@ -1,6 +1,29 @@
-import matplotlib.pyplot as plt
 import numpy as np
+import utils
 
+
+def plot_sin_classic(A, T, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
+    y = [(A * np.sin(2 * T * np.pi * i)) for i in t]
+
+    utils.plot_signal(t, y, 'Sinusoidalny')
+    return y
+
+
+def plot_sin_jednopolowkowy(A, T, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
+    y = [0.5 * A * (np.sin(2 * T * np.pi * i) + np.abs((np.sin(2 * T * np.pi * i)))) for i in t]
+
+    utils.plot_signal(t, y, 'Sinusoidalny jednopolowkowy')
+    return y
+
+
+def plot_sin_dwupolowkowy(A, T, t1, d):
+    t = np.arange(t1, t1 + d, 0.01)
+    y = [A * np.abs(np.sin(2 * T * np.pi * i)) for i in t]
+
+    utils.plot_signal(t, y, 'Sinusoidalny dwupolowkowy')
+    return y
 
 def plot_prostokatny(A, T, kW, t1, d):
     t = np.arange(t1, t1 + d, 0.01)
@@ -20,12 +43,8 @@ def plot_prostokatny(A, T, kW, t1, d):
 
         y.append(y_val)
 
-    plt.plot(t, y)
-    plt.xlabel('time (t)')
-    plt.ylabel('value (y)')
-    plt.title('Prostokatny')
-    plt.grid(True)
-    plt.show()
+    utils.plot_signal(t, y, 'Prostokatny')
+    return y
 
 
 def plot_prostokatny_symetryczny(A, T, kW, t1, d):
@@ -46,12 +65,8 @@ def plot_prostokatny_symetryczny(A, T, kW, t1, d):
 
         y.append(y_val)
 
-    plt.plot(t, y)
-    plt.xlabel('time (t)')
-    plt.ylabel('value (y)')
-    plt.title('Prostokatny symetryczny')
-    plt.grid(True)
-    plt.show()
+    utils.plot_signal(t, y, 'Prostokatny symetryczny')
+    return y
 
 
 def plot_trojkatny(A, T, kW, t1, d):
@@ -73,9 +88,5 @@ def plot_trojkatny(A, T, kW, t1, d):
 
         y.append(y_val)
 
-    plt.plot(t, y)
-    plt.xlabel('time (t)')
-    plt.ylabel('value (y)')
-    plt.title('Trojkatny')
-    plt.grid(True)
-    plt.show()
+    utils.plot_signal(t, y, 'Trojkatny')
+    return y

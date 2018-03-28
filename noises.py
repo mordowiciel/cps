@@ -13,6 +13,8 @@ def szum_jednostajny(A, t1, d):
     plt.grid(True)
     plt.show()
 
+    return y
+
 
 def szum_gaussowski(A, t1, d):
     t = np.arange(t1, t1 + d, 0.01)
@@ -24,3 +26,5 @@ def szum_gaussowski(A, t1, d):
     plt.title('Szum gaussowski')
     plt.grid(True)
     plt.show()
+
+    return y
