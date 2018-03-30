@@ -41,5 +41,5 @@ from cpssignal import CPSSignal
 
 # y_sig = plot_sin_classic(1, 1, 0, 1)
 
-y_val = plot_sin_classic(1, 1, 0, 1)
+y_val = sine(1, 1, 0, 1, 100)
 sig = CPSSignal(0, 10, 0.01, y_val)
