@@ -8,3 +8,11 @@ def plot_signal(t, y, title):
     plt.title(title)
     plt.grid(True)
     plt.show()
+
+
+def plot_histogram(y, title):
+    plt.xlabel('Value')
+    plt.ylabel('Quantity')
+    plt.title(title)
+    plt.hist(y, alpha=0.5, histtype='bar', ec='black')
+    plt.show()
