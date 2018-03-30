@@ -2,7 +2,7 @@ import numpy as np
 import plot_utils
 
 
-def szum_jednostajny(A, t1, d):
+def uniform(A, t1, d):
     t = np.arange(t1, t1 + d, 0.01)
     y = np.random.uniform(-A, A, len(t))
 
@@ -11,7 +11,7 @@ def szum_jednostajny(A, t1, d):
     return y
 
 
-def szum_gaussowski(A, t1, d):
+def gaussian(A, t1, d):
     t = np.arange(t1, t1 + d, 0.01)
     y = np.random.normal(-A, A, len(t))
 
