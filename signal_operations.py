@@ -1,26 +1,29 @@
 import numpy as np
 import plot_utils
+from cpssignal import *
 
 
-def add_signals(y1, y2, t):
-    y_sum = np.add(y1, y2)
-    plot_utils.plot_signal(t, y_sum, 'Adding signals')
-    return y_sum
+# TODO : zakladamy, ze sygnaly maja identyczny przedzial czasowy oraz okres probkowania -> wprowadzic walidacje!
+
+def add_signals(sig1, sig2):
+    values_sum = np.add(sig1.values, sig2.values)
+    new_sig = CPSSignal(sig1.t0, sig1.t1, sig1.sampling_freq, values_sum)
+    return new_sig
 
 
-def substract_signals(y1, y2, t):
-    y_sub = np.subtract(y1, y2)
-    plot_utils.plot_signal(t, y_sub, 'Substracting signals')
-    return y_sub
+def substract_signals(sig1, sig2):
+    values_sub = np.subtract(sig1.values, sig2.values)
+    new_sig = CPSSignal(sig1.t0, sig1.t1, sig1.sampling_freq, values_sub)
+    return new_sig
 
 
-def multiply_signals(y1, y2, t):
-    y_mul = np.multiply(y1, y2)
-    plot_utils.plot_signal(t, y_mul, 'Multiplying signals')
-    return y_mul
+def multiply_signals(sig1, sig2):
+    values_mul = np.multiply(sig1.values, sig2.values)
+    new_sig = CPSSignal(sig1.t0, sig1.t1, sig1.sampling_freq, values_mul)
+    return new_sig
 
 
-def divide_signals(y1, y2, t):
-    y_div = np.divide(y1, y2)
-    plot_utils.plot_signal(t, y_div, 'Dividing signals')
-    return y_div
+def divide_signals(sig1, sig2):
+    values_div = np.divide(sig1.values, sig2.values)
+    new_sig = CPSSignal(sig1.t0, sig1.t1, sig1.sampling_freq, values_div)
+    return new_sig
