@@ -1,5 +1,5 @@
 from signal_generator import *
-from cpssignal import CPSSignal
+import plot_utils
 
 # szum_gaussowski(5, 0, 10)
 # plot_sin_classic(2, 0.5, 0, 10)
@@ -41,5 +41,5 @@ from cpssignal import CPSSignal
 
 # y_sig = plot_sin_classic(1, 1, 0, 1)
 
-y_val = sine(1, 1, 0, 1, 100)
-sig = CPSSignal(0, 10, 0.01, y_val)
+sig = sine(1, 1, 0, 1, 100)
+plot_utils.plot_signal(sig, 'Test')
