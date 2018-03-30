@@ -1,34 +1,34 @@
 import numpy as np
-import utils
+from cpssignal import CPSSignal
+import plot_utils
 
 
-def plot_sin_classic(A, T, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def sine(A, T, t1, d, sampling_freq):
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.array([(A * np.sin(2 * T * np.pi * i)) for i in t], dtype=complex)
 
-    utils.plot_signal(t, y, 'Sinusoidalny')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def plot_sin_jednopolowkowy(A, T, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def half_wave_rect_sine(A, T, t1, d, sampling_freq):
+    t = np.arange(t1, t1 + d, sampling_freq)
     y = np.array([0.5 * A * (np.sin(2 * T * np.pi * i) + np.abs((np.sin(2 * T * np.pi * i)))) for i in t],
                  dtype=complex)
 
-    utils.plot_signal(t, y, 'Sinusoidalny jednopolowkowy')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def plot_sin_dwupolowkowy(A, T, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def full_wave_rect_sine(A, T, t1, d, sampling_freq):
+    t = np.arange(t1, t1 + d, sampling_freq)
     y = np.array([A * np.abs(np.sin(2 * T * np.pi * i)) for i in t], dtype=complex)
 
-    utils.plot_signal(t, y, 'Sinusoidalny dwupolowkowy')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def plot_prostokatny(A, T, kW, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def square(A, T, kW, t1, d, sampling_freq):
+    t = np.arange(t1, t1 + d, sampling_freq)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -45,12 +45,11 @@ def plot_prostokatny(A, T, kW, t1, d):
 
         y[counter] = y_val
 
-    utils.plot_signal(t, y, 'Prostokatny')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def plot_prostokatny_symetryczny(A, T, kW, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def square_symmetrical(A, T, kW, t1, d, sampling_freq):
+    t = np.arange(t1, t1 + d, sampling_freq)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -67,12 +66,11 @@ def plot_prostokatny_symetryczny(A, T, kW, t1, d):
 
         y[counter] = y_val
 
-    utils.plot_signal(t, y, 'Prostokatny symetryczny')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def plot_trojkatny(A, T, kW, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def triangular(A, T, kW, t1, d, sampling_freq):
+    t = np.arange(t1, t1 + d, sampling_freq)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -90,5 +88,4 @@ def plot_trojkatny(A, T, kW, t1, d):
 
         y[index] = y_val
 
-    utils.plot_signal(t, y, 'Trojkatny')
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
