@@ -13,7 +13,9 @@ def sine(A, T, t1, d, sampling_freq):
 
 
 def half_wave_rect_sine(A, T, t1, d, sampling_freq):
-    t = np.arange(t1, t1 + d, sampling_freq)
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.array([0.5 * A * (np.sin(2 * T * np.pi * i) + np.abs((np.sin(2 * T * np.pi * i)))) for i in t],
                  dtype=complex)
 
@@ -21,14 +23,18 @@ def half_wave_rect_sine(A, T, t1, d, sampling_freq):
 
 
 def full_wave_rect_sine(A, T, t1, d, sampling_freq):
-    t = np.arange(t1, t1 + d, sampling_freq)
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.array([A * np.abs(np.sin(2 * T * np.pi * i)) for i in t], dtype=complex)
 
     return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
 def square(A, T, kW, t1, d, sampling_freq):
-    t = np.arange(t1, t1 + d, sampling_freq)
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -49,7 +55,9 @@ def square(A, T, kW, t1, d, sampling_freq):
 
 
 def square_symmetrical(A, T, kW, t1, d, sampling_freq):
-    t = np.arange(t1, t1 + d, sampling_freq)
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -70,7 +78,9 @@ def square_symmetrical(A, T, kW, t1, d, sampling_freq):
 
 
 def triangular(A, T, kW, t1, d, sampling_freq):
-    t = np.arange(t1, t1 + d, sampling_freq)
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
