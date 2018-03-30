@@ -1,5 +1,6 @@
 from signal_generator import *
 import plot_utils
+import pickle
 
 # szum_gaussowski(5, 0, 10)
 # plot_sin_classic(2, 0.5, 0, 10)
@@ -42,4 +43,15 @@ import plot_utils
 # y_sig = plot_sin_classic(1, 1, 0, 1)
 
 sig = sine(1, 1, 0, 1, 100)
-plot_utils.plot_signal(sig, 'Test')
+print 'Plotting before serializing'
+plot_utils.plot_signal(sig, 'Before serializing')
+
+bin_file = open('sig.bin', mode='wb')
+pickle.dump(sig, bin_file)
+bin_file.close()
+
+print 'Plotting after deserializing'
+bin_file = open('sig.bin', mode='rb')
+sig_new = pickle.load(bin_file)
+plot_utils.plot_signal(sig_new, 'After serializing')
+bin_file.close()
