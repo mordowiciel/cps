@@ -1,20 +1,28 @@
 import numpy as np
-import plot_utils
+import scipy.stats as stats
+from cpssignal import CPSSignal
 
 
-def szum_jednostajny(A, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
+def uniform(A, t1, d, sampling_freq):
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
     y = np.random.uniform(-A, A, len(t))
 
-    plot_utils.plot_signal(t, y, 'Uniform noise')
-
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
 
 
-def szum_gaussowski(A, t1, d):
-    t = np.arange(t1, t1 + d, 0.01)
-    y = np.random.normal(-A, A, len(t))
+def gaussian(A, t1, d, sampling_freq):
+    sampling_step = 1.0 / sampling_freq
 
-    plot_utils.plot_signal(t, y, 'Gaussian noise')
+    t = np.arange(t1, t1 + d, sampling_step)
+    truncated_gaussian_generator = truncated_normal(low=-A, upp=A)
+    y = truncated_gaussian_generator.rvs(len(t))
 
-    return y
+    return CPSSignal(t1, t1 + d, sampling_freq, y)
+
+
+# Helper function to generate Gaussian distribution within given range
+def truncated_normal(mean=0, sd=1, low=0, upp=10):
+    return stats.truncnorm(
+        (low - mean) / sd, (upp - mean) / sd, loc=mean, scale=sd)
