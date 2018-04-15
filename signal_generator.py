@@ -3,6 +3,7 @@ from cpssignal import CPSSignal
 import signal_serializer
 
 
+
 def sine(A, T, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
