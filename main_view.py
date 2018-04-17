@@ -8,12 +8,9 @@ from matplotlib.figure import Figure
 import signal_generator as sig_gen
 import numpy as np
 import plot_utils as plot_u
-import signal_operations as signal_o
+import signal_operations as signal_operations
 import signal_serializer as signal_serializer
-
 import random
-
-
 
 class BasicView:
 
@@ -125,13 +122,13 @@ class BasicView:
   def show_current_function_plot(self):
     signalName = self.ListBoxReference.get(ACTIVE)
     signal = self.signalsMap[signalName]
-    self.drawSignal(signal)
+    self.draw_signal(signal)
 
 
   def show_current_function_histogram(self):
     signalName = self.ListBoxReference.get(ACTIVE)
     signal = self.signalsMap[signalName]
-    self.drawHistogram(signal)
+    self.draw_histogram(signal)
 
 
   def init_form_window(self):
@@ -145,48 +142,48 @@ class BasicView:
 
     Label(top, text="Typ funkcji").grid(row= 0)
     Label(top, text="Nazwa").grid(row=2)
-    e1 = Entry(top, state=self.getState(1))
+    e1 = Entry(top, state=self.get_state(1))
     self.nameEntry = e1
 
 
     Label(top, text="Amplituda").grid(row=3)
-    e2 = Entry(top, state=self.getState(2))
+    e2 = Entry(top, state=self.get_state(2))
     self.amplitudeEntry = e2
 
     Label(top, text="Czas poczatkowy(t1)").grid(row=4)
-    e3 = Entry(top, state=self.getState(3))
+    e3 = Entry(top, state=self.get_state(3))
     self.t1Entry=e3
 
     Label(top, text="Czas trwania(d)").grid(row= 5)
-    e4 = Entry(top, state=self.getState(4))
+    e4 = Entry(top, state=self.get_state(4))
     self.dEntry = e4
 
     Label(top, text="Okres podstawowy(T)").grid(row= 6)
-    e5 = Entry(top, state=self.getState(5))
+    e5 = Entry(top, state=self.get_state(5))
     self.TEntry = e5
 
     Label(top, text="Wspolczynnik wypelnienia(kw)").grid(row=7)
-    e6 = Entry(top, state=self.getState(6))
+    e6 = Entry(top, state=self.get_state(6))
     self.KwEntry = e6
 
     # Label(top, text="Skok jednostkowy(ts)").grid(row= 7)
-    # e7 = Entry(top, state=self.getState(7))
+    # e7 = Entry(top, state=self.get_state(7))
 
     # Label(top, text="Nr pierwszej probki(n1)").grid(row= 8)
-    # e8 = Entry(top, state=self.getState(8))
+    # e8 = Entry(top, state=self.get_state(8))
 
     # Label(top, text="Skok dla probki nr (ns)").grid(row= 9)
-    # e9 = Entry(top, state=self.getState(9))
+    # e9 = Entry(top, state=self.get_state(9))
 
     Label(top, text="Czestotliwosc probkowania(f)").grid(row= 10)
-    e10 = Entry(top, state=self.getState(10))
+    e10 = Entry(top, state=self.get_state(10))
     self.sampFreqEntry = e10
 
     # Label(top, text="Prawdopodobienstwo(p)").grid(row= 11)
-    # e11 = Entry(top, state=self.getState(11))
+    # e11 = Entry(top, state=self.get_state(11))
 
 
-    # e1 = Entry(top, state=self.getState(1))
+    # e1 = Entry(top, state=self.get_state(1))
 
     e1.grid(row=2, column=1)
     e2.grid(row=3, column=1)
@@ -199,7 +196,7 @@ class BasicView:
     # e9.grid(row=9, column=1)
     e10.grid(row=10, column=1)
     # e11.grid(row=11, column=1)
-    Button(top, text='Add', width=15, command=self.generateSignal).grid(row=15, column=1, sticky=W, pady=4)
+    Button(top, text='Add', width=15, command=self.generate_signal).grid(row=15, column=1, sticky=W, pady=4)
 
     top.mainloop()
 
@@ -249,9 +246,9 @@ class BasicView:
     w3.config(width=25)
     w3.grid(column = 1, row = 2, sticky="ew")
 
-    Button(top, text='Perform', width=15, command=lambda: [self.signalsActions(), top.destroy()]).grid(row=4, column=1, sticky=W)
+    Button(top, text='Perform', width=15, command=lambda: [self.signals_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
 
-  def signalsActions(self):
+  def signals_actions(self):
     signal1Name = self.selectedSignalsForAction[0].get()
     signal2Name = self.selectedSignalsForAction[1].get()
     signal1 = self.signalsMap[signal1Name]
@@ -259,21 +256,21 @@ class BasicView:
     result = None
     label = ''
     if (self.actionType.get() == "Add"):
-      result = signal_o.add_signals(signal1, signal2)
+      result = signal_operations.add_signals(signal1, signal2)
       label = signal1.name + "+" + signal2.name
     elif(self.actionType.get() == "Substract"):
-      result = signal_o.substract_signals(signal1, signal2)
+      result = signal_operations.substract_signals(signal1, signal2)
       label = signal1.name + "-" + signal2.name
     elif(self.actionType.get() == "Multiply"):
-      result = signal_o.multiply_signals(signal1, signal2)
+      result = signal_operations.multiply_signals(signal1, signal2)
       label = signal1.name + "*" + signal2.name
     elif(self.actionType.get() == "Divide"):
-      result = signal_o.divide_signals(signal1, signal2)
+      result = signal_operations.divide_signals(signal1, signal2)
       label = signal1.name + "/" + signal2.name
 
     self.add_to_menu_grid(result, label)
 
-  def generateSignal(self, signal=None):
+  def generate_signal(self, signal=None):
     option = self.selectedFunction.get()
     if signal == None:
       if option == "sine":
@@ -290,16 +287,16 @@ class BasicView:
         signal = sig_gen.triangular(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), kW=float(self.KwEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
     self.formWindow.destroy()
     self.add_to_menu_grid(signal, signal.name)
-    self.drawSignal(signal)
+    self.draw_signal(signal)
 
-  def drawSignal(self, signal, label = 'Signal'):
+  def draw_signal(self, signal, label = 'Signal'):
     if isinstance(signal, str):
       signal = self.signalsMap[signal]
     entries = plot_u.plot_signal(signal, label)
     # TUTAJ MUSISZ PRZYPISAC DO ENTRIES IKSY ORAZ IGREKI SYGNALU TAK ZEBY PASOWALY DO FUNKCJI SET_TOP_PANE_CANVAS(SPRAWDZ KOMENTARZ W TEJ FUNKCJI)
     self.set_top_pane_canvas(entries, 'signal')
 
-  def drawHistogram(self, signal, label = 'Histogram'):
+  def draw_histogram(self, signal, label = 'Histogram'):
     if isinstance(signal, str):
       signal = self.signalsMap[signal]
     entries = [1]
@@ -313,10 +310,10 @@ class BasicView:
     w = evt.widget
     # index = int(w.curselection()[0])
     # value = w.get(index)
-    # self.drawHistogram(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
-    self.drawSignal(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
+    # self.draw_histogram(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
+    self.draw_signal(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
 
-  def getState(self, labelNr):
+  def get_state(self, labelNr):
     return NORMAL
 
   def serialize_signals(self):
