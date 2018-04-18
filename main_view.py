@@ -103,11 +103,18 @@ class BasicView:
     canvas.show()
     if (entries != None):
       a = f.add_subplot(111)
-        # TUTAJ TRZEBA WYJEBAC RANDOM ORAZ FUNKCJE A.PLOT/A.HIST I WRZUCIC POPRAWNE WARTOSCI. DLA PLOT a.plot([igreki], [iksy] ), a dla a.hist zobacz tu https://matplotlib.org/gallery/user_interfaces/histogram_demo_canvasagg_sgskip.html
+        # TUTAJ TRZEBA WYJEBAC RANDOM ORAZ FUNKCJE A.PLOT/A.HIST I WRZUCIC POPRAWNE WARTOSCI.
+      # DLA PLOT a.plot([igreki], [iksy] ), a dla a.hist zobacz tu
+      # https://matplotlib.org/gallery/user_interfaces/histogram_demo_canvasagg_sgskip.html
 
-      rand = random.randint(1,3)
-      if (canvasType=='signal'):
-        a.plot([1%rand,2%rand,3%rand,4%rand,5%rand,6%rand,7%rand,8%rand],[5%rand,6%rand,1%rand,3%rand,8%rand,9%rand,3%rand,5%rand])
+      # rand = random.randint(1,3)
+      # if (canvasType=='signal'):
+      #   a.plot([1%rand,2%rand,3%rand,4%rand,5%rand,6%rand,7%rand,8%rand],[5%rand,6%rand,1%rand,3%rand,8%rand,9%rand,3%rand,5%rand])
+
+      x = entries[0]
+      y = entries[1]
+
+      a.plot(entries[0], entries[1])
 
       if (canvasType=='histogram'):
         a.hist([0,1,2,3], alpha=0.5, histtype='bar', ec='black')
@@ -135,7 +142,7 @@ class BasicView:
     top = Toplevel()
     self.formWindow = top
     self.selectedFunction = StringVar(top)
-    self.selectedFunction.set(self.FUNC_OPTIONS.values()[0])
+    self.selectedFunction.set(list(self.FUNC_OPTIONS.values())[0])
     w = OptionMenu(top, self.selectedFunction, *self.FUNC_OPTIONS.values())
     w.config(width=25)
     w.grid(column =1, row =0, sticky="ew")
@@ -215,7 +222,7 @@ class BasicView:
 
     listBoxOptions = list(self.ListBoxReference.get(0, END))
     if len(listBoxOptions) == 0:
-      tkMessageBox.showinfo("Alert", "You need to add at least one function")
+      messagebox.showinfo("Alert", "You need to add at least one function")
       return
     top = Toplevel()
 
@@ -303,7 +310,7 @@ class BasicView:
     self.set_top_pane_canvas(entries, 'histogram')
 
 
-  def delete_from_menu_grid(firstIndex, lastIndex):
+  def delete_from_menu_grid(self, firstIndex, lastIndex):
     self.ListBoxReference.delete(firstIndex, lastIndex)
 
   def onselect(self, evt):
