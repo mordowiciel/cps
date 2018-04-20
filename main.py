@@ -4,20 +4,18 @@
 from main_view import BasicView
 
 # import signal_generator
+import signal_generator
+import noise_generator
+import numpy as np
+import matplotlib.pyplot as plt
+
 # import signal_operations
 # import plot_utils
 
 
 basicView = BasicView()
 
-
-
-
-
-
-
-
-
+# signal = signal_generator.step_function('step', A=10, t1=0, d=10, tS=5, sampling_freq=1000)
 
 # signal_generator.init_first_app_state()
 
