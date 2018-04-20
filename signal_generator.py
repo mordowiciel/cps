@@ -123,6 +123,28 @@ def step_function(name, A, t1, d, tS, sampling_freq):
     return CPSSignal(name, t1, t1 + d, sampling_freq, y)
 
 
+def simple_kronecker(n):
+    if n == 0:
+        return 1.0
+    else:
+        return 0.0
+
+
+def kronecker(name, A, nS, n1, l, sampling_freq):
+
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(n1, n1 + l, sampling_step)
+    y = np.zeros(len(t), dtype=complex)
+
+    for index, dt in enumerate(t):
+        fun_val = dt - nS
+        y_val = A * (simple_kronecker(fun_val))
+        y[index] = y_val
+
+    return CPSSignal(name, n1, n1 + l, sampling_freq, y)
+
+
 def init_first_app_state():
     sig_sine = sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
     sig_half_sine = half_wave_rect_sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
