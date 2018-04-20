@@ -1,5 +1,8 @@
 #!/usr/bin/env python
+
+# coding: utf-8
 from main_view import BasicView
+
 # import signal_generator
 # import signal_operations
 # import plot_utils

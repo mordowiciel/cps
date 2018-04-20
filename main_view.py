@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from Tkinter import *
 import tkMessageBox
 
@@ -8,15 +10,16 @@ from matplotlib.figure import Figure
 import signal_generator as sig_gen
 import numpy as np
 import plot_utils as plot_u
+import signal_utils as signal_utils
+import noise_generator as noise_generator
 import signal_operations as signal_operations
 import signal_serializer as signal_serializer
-import random
+import number_parser as number_parser
 
 class BasicView:
 
   ListBoxReference = None
   TopPaneReference = None
-  RRow = 1
   entries = []
   amplitudeEntry = None
   nameEntry = ''
@@ -33,12 +36,14 @@ class BasicView:
   selectedSignalsForAction = []
 
   FUNC_OPTIONS = {
-    3: "sine",
-    4: "half_wave_rect_sine",
-    5: "full_wave_rect_sine",
-    6: "square",
-    7: "square_symmetrical",
-    8: "triangular"
+    1: "szum o rozkładzie jednostajnym",
+    2: "szum gaussowski",
+    3: "sinusoidalny",
+    4: "sinusoidalny wyprostowany jednopołówkowo",
+    5: "sinusoidalny wyprostowany dwupołówkowo",
+    6: "prostokątny",
+    7: "prostokątny symetryczny",
+    8: "trójkątny",
   }
 
 
@@ -47,6 +52,7 @@ class BasicView:
 
   def init_basic_window(self):
     root = Tk()
+
     self.init_menubar(root)
     self.init_menu_grid(root)
     root.mainloop()
@@ -54,17 +60,18 @@ class BasicView:
   def init_menubar(self, parent):
     menubar = Menu(parent)
     optionsMenu = Menu(menubar, tearoff=0)
-    optionsMenu.add_command(label="Add function", command=self.init_form_window)
-    optionsMenu.add_command(label="Export signals", command=self.serialize_signals)
-    optionsMenu.add_command(label="Import signals", command=self.deserialize_signals)
+    optionsMenu.add_command(label="Dodaj funkcje", command=self.init_form_window)
+    optionsMenu.add_command(label="Usuń funkcje", command=self.delete_from_menu_grid)
 
+    optionsMenu.add_command(label="Eksportuj sygnały", command=self.serialize_signals)
+    optionsMenu.add_command(label="Importuj sygnały", command=self.deserialize_signals)
 
     optionsMenu.add_separator()
 
-    optionsMenu.add_command(label="Operation on signals", command=self.init_signal_action)
+    optionsMenu.add_command(label="Operacje na sygnałąch", command=self.init_signal_action)
 
-    optionsMenu.add_command(label="Exit", command=parent.quit)
-    menubar.add_cascade(label="Options", menu=optionsMenu)
+    optionsMenu.add_command(label="Wyjscie", command=parent.quit)
+    menubar.add_cascade(label="Opcje", menu=optionsMenu)
     parent.config(menu=menubar)
 
   def init_menu_grid(self, parent):
@@ -94,36 +101,40 @@ class BasicView:
     if (entries != None):
       buttonsFrame = Frame(top)
       buttonsFrame.pack(side='top')
-      Button(buttonsFrame, text="Show plot", command=self.show_current_function_plot).pack(side="left")
-      Button(buttonsFrame, text="Show histogram", command=self.show_current_function_histogram).pack(side="left")
+      Button(buttonsFrame, text="Pokaz wykres", command=self.show_current_function_plot).pack(side="left")
+      Button(buttonsFrame, text="Pokaz histogram", command=self.show_current_function_histogram).pack(side="left")
+      statsFrame = Frame(top)
+      statsFrame.pack(side='top')
+      if(canvasType == 'signal'):
+        avg = signal_utils.calculate_average(int(entries[0][0]), int(entries[0][-1]), entries[1])
+        avg_abs = signal_utils.calculate_abs_average(int(entries[0][0]), int(entries[0][-1]), entries[1])
+        avg_power = signal_utils.calculate_avg_power(int(entries[0][0]), int(entries[0][-1]), entries[1])
+        variance = signal_utils.calculate_variance(int(entries[0][0]), int(entries[0][-1]), entries[1])
+        root_mean_sq = signal_utils.calculate_root_mean_square(int(entries[0][0]), int(entries[0][-1]), entries[1])
+
+        Label(statsFrame, text="Wartosc srednia: {0}".format(avg).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=1)
+        Label(statsFrame, text="Wartosc srednia bezwzgledna: {0}".format(avg_abs).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=2)
+        Label(statsFrame, text="Wartosc skuteczna: {0}".format(root_mean_sq).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=3)
+        Label(statsFrame, text="Wariancja: {0}".format(variance).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=4)
+        Label(statsFrame, text="Moc srednia: {0}".format(avg_power).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=5)
 
     f = Figure(figsize=(5,5), dpi=100)
     canvas = FigureCanvasTkAgg(f,  top)
     canvas.get_tk_widget().pack(side=BOTTOM, fill=BOTH, expand=True)
     canvas.show()
+
     if (entries != None):
       a = f.add_subplot(111)
-        # TUTAJ TRZEBA WYJEBAC RANDOM ORAZ FUNKCJE A.PLOT/A.HIST I WRZUCIC POPRAWNE WARTOSCI.
-      # DLA PLOT a.plot([igreki], [iksy] ), a dla a.hist zobacz tu
-      # https://matplotlib.org/gallery/user_interfaces/histogram_demo_canvasagg_sgskip.html
 
-      # rand = random.randint(1,3)
-      # if (canvasType=='signal'):
-      #   a.plot([1%rand,2%rand,3%rand,4%rand,5%rand,6%rand,7%rand,8%rand],[5%rand,6%rand,1%rand,3%rand,8%rand,9%rand,3%rand,5%rand])
-
-      x = entries[0]
-      y = entries[1]
-
-      a.plot(entries[0], entries[1])
+      if (canvasType == 'signal'):
+        a.plot(entries[0], entries[1])
 
       if (canvasType=='histogram'):
-        a.hist([0,1,2,3], alpha=0.5, histtype='bar', ec='black')
+        a.hist(entries, alpha=0.5, histtype='bar', ec='black')
 
       toolbar = NavigationToolbar2TkAgg(canvas, self.TopPaneReference)
       toolbar.update()
       canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=True)
-
-
 
 
   def show_current_function_plot(self):
@@ -157,19 +168,19 @@ class BasicView:
     e2 = Entry(top, state=self.get_state(2))
     self.amplitudeEntry = e2
 
-    Label(top, text="Czas poczatkowy(t1)").grid(row=4)
+    Label(top, text="Czas poczatkowy").grid(row=4)
     e3 = Entry(top, state=self.get_state(3))
     self.t1Entry=e3
 
-    Label(top, text="Czas trwania(d)").grid(row= 5)
+    Label(top, text="Czas trwania").grid(row= 5)
     e4 = Entry(top, state=self.get_state(4))
     self.dEntry = e4
 
-    Label(top, text="Okres podstawowy(T)").grid(row= 6)
+    Label(top, text="Okres podstawowy").grid(row= 6)
     e5 = Entry(top, state=self.get_state(5))
     self.TEntry = e5
 
-    Label(top, text="Wspolczynnik wypelnienia(kw)").grid(row=7)
+    Label(top, text="Wspolczynnik wypelnienia").grid(row=7)
     e6 = Entry(top, state=self.get_state(6))
     self.KwEntry = e6
 
@@ -182,7 +193,7 @@ class BasicView:
     # Label(top, text="Skok dla probki nr (ns)").grid(row= 9)
     # e9 = Entry(top, state=self.get_state(9))
 
-    Label(top, text="Czestotliwosc probkowania(f)").grid(row= 10)
+    Label(top, text="Czestotliwosc probkowania").grid(row= 10)
     e10 = Entry(top, state=self.get_state(10))
     self.sampFreqEntry = e10
 
@@ -203,7 +214,7 @@ class BasicView:
     # e9.grid(row=9, column=1)
     e10.grid(row=10, column=1)
     # e11.grid(row=11, column=1)
-    Button(top, text='Add', width=15, command=self.generate_signal).grid(row=15, column=1, sticky=W, pady=4)
+    Button(top, text='Dodaj', width=15, command=self.generate_signal).grid(row=15, column=1, sticky=W, pady=4)
 
     top.mainloop()
 
@@ -214,19 +225,19 @@ class BasicView:
   def init_signal_action(self):
 
     OPTIONS = [
-      "Add",
-      "Substract",
-      "Multiply",
-      "Divide"
+      "Dodaj",
+      "Odejmij",
+      "Pomnóz",
+      "Podziel"
     ]
 
     listBoxOptions = list(self.ListBoxReference.get(0, END))
     if len(listBoxOptions) == 0:
-      messagebox.showinfo("Alert", "You need to add at least one function")
+      messagebox.showinfo("Uwaga", "Musisz dodać przynajmniej jedną funkcję")
       return
     top = Toplevel()
 
-    Label(top, text="First signal").grid(row=0, column=0)
+    Label(top, text="Pierwszy sygnał").grid(row=0, column=0)
     selected = StringVar(top)
     selected.set(listBoxOptions[0])
     w = OptionMenu(top, selected, *listBoxOptions)
@@ -234,7 +245,7 @@ class BasicView:
     w.grid(column =1, row =0, sticky="ew")
 
 
-    Label(top, text="Second signal").grid(row=1, column=0)
+    Label(top, text="Drugi sygnał").grid(row=1, column=0)
     selected2 = StringVar(top)
     selected2.set(listBoxOptions[0])
     w2= OptionMenu(top, selected2, *listBoxOptions)
@@ -253,7 +264,7 @@ class BasicView:
     w3.config(width=25)
     w3.grid(column = 1, row = 2, sticky="ew")
 
-    Button(top, text='Perform', width=15, command=lambda: [self.signals_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
 
   def signals_actions(self):
     signal1Name = self.selectedSignalsForAction[0].get()
@@ -262,16 +273,16 @@ class BasicView:
     signal2 = self.signalsMap[signal2Name]
     result = None
     label = ''
-    if (self.actionType.get() == "Add"):
+    if (self.actionType.get() == "Dodaj"):
       result = signal_operations.add_signals(signal1, signal2)
       label = signal1.name + "+" + signal2.name
-    elif(self.actionType.get() == "Substract"):
+    elif(self.actionType.get() == "Odejmij"):
       result = signal_operations.substract_signals(signal1, signal2)
       label = signal1.name + "-" + signal2.name
-    elif(self.actionType.get() == "Multiply"):
+    elif(self.actionType.get() == "Pomnoz"):
       result = signal_operations.multiply_signals(signal1, signal2)
       label = signal1.name + "*" + signal2.name
-    elif(self.actionType.get() == "Divide"):
+    elif(self.actionType.get() == "Podziel"):
       result = signal_operations.divide_signals(signal1, signal2)
       label = signal1.name + "/" + signal2.name
 
@@ -280,18 +291,23 @@ class BasicView:
   def generate_signal(self, signal=None):
     option = self.selectedFunction.get()
     if signal == None:
-      if option == "sine":
-        signal = sig_gen.sine(name = self.nameEntry.get(), A= float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), t1=float(self.t1Entry.get()), d=float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
-      elif option == "half_wave_rect_sine":
-        signal = sig_gen.half_wave_rect_sine(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
-      elif option == "full_wave_rect_sine":
-        signal = sig_gen.full_wave_rect_sine(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
-      elif option == "square":
-        signal = sig_gen.square(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), kW=float(self.KwEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
-      elif option == "square_symmetrical":
-        signal = sig_gen.square_symmetrical(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), kW=float(self.KwEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
-      elif option == "triangular":
-        signal = sig_gen.triangular(name = self.nameEntry.get(), A=float(self.amplitudeEntry.get()), T=float(self.TEntry.get()), kW=float(self.KwEntry.get()), t1 = float(self.t1Entry.get()), d =float(self.dEntry.get()), sampling_freq=float(self.sampFreqEntry.get()))
+      if option == "szum gaussowski":
+        signal = noise_generator.gaussian(name = self.nameEntry.get(), A= number_parser.parse(self.amplitudeEntry.get()), t1=number_parser.parse(self.t1Entry.get()), d=number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "szum o rozkładzie jednostajnym":
+        signal = noise_generator.uniform(name = self.nameEntry.get(), A= number_parser.parse(self.amplitudeEntry.get()), t1=number_parser.parse(self.t1Entry.get()), d=number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "sinusoidalny":
+        signal = sig_gen.sine(name = self.nameEntry.get(), A= number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), t1=number_parser.parse(self.t1Entry.get()), d=number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "sinusoidalny wyprostowany jednopołówkowo":
+        signal = sig_gen.half_wave_rect_sine(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "sinusoidalny wyprostowany dwupołówkowo":
+        signal = sig_gen.full_wave_rect_sine(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "prostokątny":
+        signal = sig_gen.square(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "prostokątny symetryczny":
+        signal = sig_gen.square_symmetrical(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+      elif option == "trójkątny":
+        signal = sig_gen.triangular(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
+
     self.formWindow.destroy()
     self.add_to_menu_grid(signal, signal.name)
     self.draw_signal(signal)
@@ -300,33 +316,33 @@ class BasicView:
     if isinstance(signal, str):
       signal = self.signalsMap[signal]
     entries = plot_u.plot_signal(signal, label)
-    # TUTAJ MUSISZ PRZYPISAC DO ENTRIES IKSY ORAZ IGREKI SYGNALU TAK ZEBY PASOWALY DO FUNKCJI SET_TOP_PANE_CANVAS(SPRAWDZ KOMENTARZ W TEJ FUNKCJI)
     self.set_top_pane_canvas(entries, 'signal')
 
   def draw_histogram(self, signal, label = 'Histogram'):
     if isinstance(signal, str):
       signal = self.signalsMap[signal]
-    entries = [1]
+    entries = plot_u.plot_histogram(signal, label)
     self.set_top_pane_canvas(entries, 'histogram')
 
 
-  def delete_from_menu_grid(self, firstIndex, lastIndex):
-    self.ListBoxReference.delete(firstIndex, lastIndex)
+  def delete_from_menu_grid(self):
+    self.ListBoxReference.delete(ACTIVE)
+    self.set_top_pane_canvas()
 
   def onselect(self, evt):
     w = evt.widget
-    # index = int(w.curselection()[0])
-    # value = w.get(index)
-    # self.draw_histogram(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
-    self.draw_signal(self.signalsMap[self.ListBoxReference.get(ACTIVE)])
+    index = int(w.curselection()[0])
+    value = w.get(index)
+    self.draw_signal(self.signalsMap[self.ListBoxReference.get(index)])
 
   def get_state(self, labelNr):
     return NORMAL
 
   def serialize_signals(self):
-    signals = self.signalsMap.values()
-    for signal in signals:
-      signal_serializer.serialize_signal(signal, signal.name)
+    # signals = self.signalsMap.values()
+    # for signal in signals:
+    signal = self.signalsMap[self.ListBoxReference.get(ACTIVE)]
+    signal_serializer.serialize_signal(signal, signal.name)
 
   def deserialize_signals(self):
     signals = signal_serializer.deserialize_signals()
