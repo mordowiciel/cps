@@ -144,7 +144,6 @@ def kronecker(name, A, nS, n1, l, sampling_freq):
 
     return CPSSignal(name, n1, n1 + l, sampling_freq, y)
 
-
 def init_first_app_state():
     sig_sine = sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
     sig_half_sine = half_wave_rect_sine(A=2, T=1, t1=0, d=1, sampling_freq=100)

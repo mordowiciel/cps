@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 from main_view import BasicView
 import signal_generator
+import noise_generator
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 # import signal_operations
 # import plot_utils
@@ -13,9 +13,9 @@ import matplotlib.pyplot as plt
 
 # signal = signal_generator.step_function('step', A=10, t1=0, d=10, tS=5, sampling_freq=1000)
 
-signal = signal_generator.kronecker('kronecker', A=1, n1=-25.0, nS=0, l=50.0, sampling_freq=2)
+signal = noise_generator.impulse(10, 0, 100, 1, 0.50)
 
-t = np.arange(signal.t0, signal.t1, 0.5)
+t = np.arange(signal.t0, signal.t1, 1)
 
 plt.scatter(t, signal.values)
 plt.xlabel('time (t)')
