@@ -3,7 +3,6 @@ from cpssignal import CPSSignal
 import signal_serializer
 
 
-
 def sine(name, A, T, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
@@ -96,6 +95,28 @@ def triangular(name, A, T, kW, t1, d, sampling_freq):
 
         else:
             y_val = (-A / (T * (1 - kW))) * (temp_t) + A / (1 - kW)
+
+        y[index] = y_val
+
+    return CPSSignal(name, t1, t1 + d, sampling_freq, y)
+
+
+def step_function(name, A, t1, d, tS, sampling_freq):
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d, sampling_step)
+    y = np.zeros(len(t), dtype=complex)
+
+    for index, dt in enumerate(t):
+
+        if dt > tS:
+            y_val = A
+
+        if dt == tS:
+            y_val = 1.0 / 2.0 * A
+
+        if dt < tS:
+            y_val = 0
 
         y[index] = y_val
 

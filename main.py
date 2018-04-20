@@ -1,20 +1,27 @@
 #!/usr/bin/env python
 from main_view import BasicView
-# import signal_generator
+import signal_generator
+import numpy as np
+import matplotlib.pyplot as plt
+
+
 # import signal_operations
 # import plot_utils
 
 
-basicView = BasicView()
+# basicView = BasicView()
 
+signal = signal_generator.step_function('step', A=10, t1=0, d=10, tS=5, sampling_freq=1000)
 
+t_step = 1.0 / signal.sampling_freq
+t = np.arange(signal.t0, signal.t1, t_step)
 
-
-
-
-
-
-
+plt.plot(t, signal.values)
+plt.xlabel('time (t)')
+plt.ylabel('value (y)')
+plt.title('chuj')
+plt.grid(True)
+plt.show()
 
 # signal_generator.init_first_app_state()
 
