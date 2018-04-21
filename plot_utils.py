@@ -15,11 +15,5 @@ def plot_signal(signal, title):
 
 
 def plot_histogram(signal, title):
-    # plt.figure(300)
-
-    # plt.xlabel('Value')
-    # plt.ylabel('Quantity')
-    # plt.title(title)
     return [signal.values]
     plt.hist(signal.values, alpha=0.5, histtype='bar', ec='black')
-    # plt.show()

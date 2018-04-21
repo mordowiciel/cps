@@ -22,7 +22,7 @@ def gaussian(name, A, t1, d, sampling_freq):
     return CPSSignal(name, t1, t1 + d, sampling_freq, y)
 
 
-def impulse(A, t1, d, sampling_freq, p):
+def impulse(name, A, t1, d, sampling_freq, p):
 
     sampling_step = 1.0 / sampling_freq
 
@@ -38,7 +38,7 @@ def impulse(A, t1, d, sampling_freq, p):
 
         y[index] = val
 
-    return CPSSignal('xxx', t1, t1 + d, sampling_freq, y)
+    return CPSSignal(name, t1, t1 + d, sampling_freq, y, discret=True)
 
 
 

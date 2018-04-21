@@ -120,7 +120,7 @@ def step_function(name, A, t1, d, tS, sampling_freq):
 
         y[index] = y_val
 
-    return CPSSignal(name, t1, t1 + d, sampling_freq, y)
+    return CPSSignal(name, t1, t1 + d, sampling_freq, y, discret=True)
 
 
 def simple_kronecker(n):
@@ -142,19 +142,4 @@ def kronecker(name, A, nS, n1, l, sampling_freq):
         y_val = A * (simple_kronecker(fun_val))
         y[index] = y_val
 
-    return CPSSignal(name, n1, n1 + l, sampling_freq, y)
-
-def init_first_app_state():
-    sig_sine = sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
-    sig_half_sine = half_wave_rect_sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
-    sig_full_sine = full_wave_rect_sine(A=2, T=1, t1=0, d=1, sampling_freq=100)
-    sig_square = square(A=5, T=1, kW=0.5, t1=0, d=10, sampling_freq=100)
-    sig_square_symm = square_symmetrical(A=5, T=1, kW=0.5, t1=0, d=10, sampling_freq=100)
-    sig_triangular = triangular(A=5, T=1, kW=0.5, t1=0, d=10, sampling_freq=100)
-
-    signal_serializer.serialize_signal('', sig_sine, 'sine')
-    signal_serializer.serialize_signal('', sig_half_sine, 'half_wave_rectified_sine')
-    signal_serializer.serialize_signal('', sig_full_sine, 'full_wave_rectified_sine')
-    signal_serializer.serialize_signal('', sig_square, 'square')
-    signal_serializer.serialize_signal('', sig_square_symm, 'square_symmetrical')
-    signal_serializer.serialize_signal('', sig_triangular, 'triangular')
+    return CPSSignal(name, n1, n1 + l, sampling_freq, y, discret=True)
