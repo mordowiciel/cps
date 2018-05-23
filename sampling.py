@@ -52,7 +52,7 @@ def sinc_interpolation(sampled_signal, x_to_upsample):
 
     new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
 
-    return CPSSignal('foh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
+    return CPSSignal('sinc_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
 
 
 def rect(t):
