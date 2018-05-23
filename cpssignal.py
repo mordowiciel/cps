@@ -16,4 +16,4 @@ class CPSSignal:
         self.values = values
         self.name = name
         self.discret = discret
-        self.t_values = np.arange(t0, t1, 1.0 / sampling_freq)
+        self.t_values = np.arange(t0, t1 + 1.0 / sampling_freq, 1.0 / sampling_freq)

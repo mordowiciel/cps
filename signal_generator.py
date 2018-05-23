@@ -6,7 +6,7 @@ import signal_serializer
 def sine(name, A, T, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.array([(A * np.sin(2 * T * np.pi * i)) for i in t], dtype=complex)
 
     return CPSSignal(name, t1, t1 + d, sampling_freq, y)
@@ -15,7 +15,7 @@ def sine(name, A, T, t1, d, sampling_freq):
 def half_wave_rect_sine(name, A, T, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.array([0.5 * A * (np.sin(2 * T * np.pi * i) + np.abs((np.sin(2 * T * np.pi * i)))) for i in t],
                  dtype=complex)
 
@@ -25,7 +25,7 @@ def half_wave_rect_sine(name, A, T, t1, d, sampling_freq):
 def full_wave_rect_sine(name, A, T, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.array([A * np.abs(np.sin(2 * T * np.pi * i)) for i in t], dtype=complex)
 
     return CPSSignal(name, t1, t1 + d, sampling_freq, y)
@@ -34,7 +34,7 @@ def full_wave_rect_sine(name, A, T, t1, d, sampling_freq):
 def square(name, A, T, kW, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -57,7 +57,7 @@ def square(name, A, T, kW, t1, d, sampling_freq):
 def square_symmetrical(name, A, T, kW, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -80,7 +80,7 @@ def square_symmetrical(name, A, T, kW, t1, d, sampling_freq):
 def triangular(name, A, T, kW, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     impulse_time = kW * T
@@ -104,7 +104,7 @@ def triangular(name, A, T, kW, t1, d, sampling_freq):
 def step_function(name, A, t1, d, tS, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     for index, dt in enumerate(t):
@@ -134,7 +134,7 @@ def kronecker(name, A, nS, n1, l, sampling_freq):
 
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(n1, n1 + l, sampling_step)
+    t = np.arange(n1, n1 + l + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     for index, dt in enumerate(t):
@@ -143,3 +143,13 @@ def kronecker(name, A, nS, n1, l, sampling_freq):
         y[index] = y_val
 
     return CPSSignal(name, n1, n1 + l, sampling_freq, y, discret=True)
+
+
+def simple(name, A, T, t1, d, sampling_freq):
+
+    sampling_step = 1.0 / sampling_freq
+
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
+    y = np.array([(A * i) for i in t], dtype=complex)
+
+    return CPSSignal(name, t1, t1 + d, sampling_freq, y)
