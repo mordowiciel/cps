@@ -8,46 +8,51 @@ def sample_signal(signal, sampling_val):
 
 
 # TODO : dziwny bug do fixniecia
-def zero_order_hold(sampled_y_values, sampled_sampling_freq, x_to_upsample):
-
-    T = 1.0 / sampled_sampling_freq
+def zero_order_hold(sampled_signal, x_to_upsample):
+    T = 1.0 / sampled_signal.sampling_freq
     new_y_values = []
 
     for t in x_to_upsample:
         sum_inp = 0
-        for index, value in enumerate(sampled_y_values):
+        for index, value in enumerate(sampled_signal.values):
             rect_val = rect((t - (T / 2.0) - (index * T)) / T)
             sum_inp += value * rect_val
         new_y_values.append(sum_inp)
 
-    return np.array(new_y_values)
+    new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
+
+    return CPSSignal('zoh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
 
 
-def first_order_hold(sampled_y_values, sampled_sampling_freq, x_to_upsample):
-    T = 1.0 / sampled_sampling_freq
+def first_order_hold(sampled_signal, x_to_upsample):
+    T = 1.0 / sampled_signal.sampling_freq
     new_y_values = []
 
     for t in x_to_upsample:
         sum_inp = 0
-        for index, value in enumerate(sampled_y_values):
+        for index, value in enumerate(sampled_signal.values):
             tri_val = tri((t - index * T) / T)
             sum_inp += value * tri_val
         new_y_values.append(sum_inp)
 
-    return np.array(new_y_values)
+    new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
+
+    return CPSSignal('foh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
 
 
-def sinc_interpolation(sampled_y_values, sampled_sampling_freq, x_to_upsample):
-    T = 1.0 / sampled_sampling_freq
+def sinc_interpolation(sampled_signal, x_to_upsample):
+    T = 1.0 / sampled_signal.sampling_freq
     new_y_values = []
 
     for t in x_to_upsample:
         sum_inp = 0
-        for index, value in enumerate(sampled_y_values):
+        for index, value in enumerate(sampled_signal.values):
             sum_inp += value * np.sinc((t / T) - index)
         new_y_values.append(sum_inp)
 
-    return np.array(new_y_values)
+    new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
+
+    return CPSSignal('foh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
 
 
 def rect(t):
