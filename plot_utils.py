@@ -7,13 +7,7 @@ def plot_signal(signal, title):
     t = np.arange(signal.t0, signal.t1, t_step)
 
     return [t, signal.values]
-    # plt.xlabel('time (t)')
-    # plt.ylabel('value (y)')
-    # plt.title(title)
-    # plt.grid(True)
-    # plt.show()
 
 
 def plot_histogram(signal, title):
     return [signal.values]
-    plt.hist(signal.values, alpha=0.5, histtype='bar', ec='black')

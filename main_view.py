@@ -210,14 +210,12 @@ class BasicView:
       e2.grid(row=row_number, column=1)
       row_number += 1
 
-
     if (3 in options[unicode(option)]):
       Label(top, text="Czas początkowy").grid(row=row_number)
       e3 = Entry(top, state=self.get_state(3))
       self.t1Entry=e3
       e3.grid(row=row_number, column=1)
       row_number += 1
-
 
 
     if (4 in options[unicode(option)]):
@@ -350,7 +348,7 @@ class BasicView:
     elif(self.actionType.get() == "Odejmij"):
       result = signal_operations.substract_signals(signal1, signal2)
       label = signal1.name + "-" + signal2.name
-    elif(self.actionType.get() == "Pomnóż"):
+    elif(self.actionType.get() == u"Pomnóż"):
       result = signal_operations.multiply_signals(signal1, signal2)
       label = signal1.name + "*" + signal2.name
     elif(self.actionType.get() == "Podziel"):
