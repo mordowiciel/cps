@@ -2,12 +2,12 @@ import numpy as np
 from cpssignal import *
 
 
-def quantize_signal(signal):
+def quantize_signal(signal, bits_count):
     y_values = signal.values
     min_y_value = round(np.min(y_values))
     max_y_value = round(np.max(y_values))
 
-    bins = np.arange(min_y_value, max_y_value + 1.0, 1.0)
+    bins = np.linspace(min_y_value, max_y_value, bits_count)
     real_y_values = y_values.astype(float)
 
     inds = np.digitize(real_y_values, bins)
@@ -25,12 +25,12 @@ def quantize_signal(signal):
     return CPSSignal('quantize_signal', signal.t0, signal.t1, signal.sampling_freq, quantz_values)
 
 
-def round_quantize_signal(signal):
+def round_quantize_signal(signal, bits_count):
     y_values = signal.values
     min_y_value = round(np.min(y_values))
     max_y_value = round(np.max(y_values))
 
-    bins = np.arange(min_y_value, max_y_value + 1.0, 1.0)
+    bins = np.linspace(min_y_value, max_y_value, bits_count)
     real_y_values = y_values.astype(float)
 
     inds = np.digitize(real_y_values, bins)
