@@ -6,7 +6,7 @@ from cpssignal import CPSSignal
 def uniform(name, A, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.random.uniform(-A, A, len(t))
 
     return CPSSignal(name, t1, t1 + d, sampling_freq, y)
@@ -15,7 +15,7 @@ def uniform(name, A, t1, d, sampling_freq):
 def gaussian(name, A, t1, d, sampling_freq):
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     truncated_gaussian_generator = truncated_normal(low=-A, upp=A)
     y = truncated_gaussian_generator.rvs(len(t))
 
@@ -26,7 +26,7 @@ def impulse(name, A, t1, d, sampling_freq, p):
 
     sampling_step = 1.0 / sampling_freq
 
-    t = np.arange(t1, t1 + d, sampling_step)
+    t = np.arange(t1, t1 + d + sampling_step, sampling_step)
     y = np.zeros(len(t), dtype=complex)
 
     for index, dt in enumerate(t):

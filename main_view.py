@@ -15,6 +15,8 @@ import noise_generator as noise_generator
 import signal_operations as signal_operations
 import signal_serializer as signal_serializer
 import number_parser as number_parser
+import sampling as sampling
+import quantization as quantization
 
 class BasicView:
   optionMenu = None
@@ -37,7 +39,11 @@ class BasicView:
   formWindow = None
   selectedFunction = None
   actionWindow = None
+  otherActionWindow = None
   signalsActionType = None
+  otherActionType = None
+  samplingVal = None
+  selectedSignalForOtherAction = None
   selectedSignalsForAction = []
 
   FUNC_OPTIONS = {
@@ -76,7 +82,8 @@ class BasicView:
 
     optionsMenu.add_separator()
 
-    optionsMenu.add_command(label="Operacje na sygnałach", command=self.init_signal_action)
+    optionsMenu.add_command(label="Operacje mat. na sygnałach", command=self.init_signal_action)
+    optionsMenu.add_command(label="Pozostałe", command=self.init_other_actions)
 
     optionsMenu.add_command(label="Wyjście", command=parent.quit)
     menubar.add_cascade(label="Opcje", menu=optionsMenu)
@@ -100,6 +107,81 @@ class BasicView:
 
     self.set_top_pane_canvas()
 
+
+  def init_other_actions(self):
+    OPTIONS = [
+      "Próbkowanie ZOH", "Próbkowanie FOH", "Interpolacja w oparciu o sinus",
+      "Kwantyzacja", "Kwantyzacja z zaokr."
+    ]
+
+    listBoxOptions = list(self.ListBoxReference.get(0, END))
+    top = Toplevel()
+
+    Label(top, text="Sygnał").grid(row=0, column=0)
+    selected = StringVar(top)
+    selected.set(listBoxOptions[0])
+    w = OptionMenu(top, selected, *listBoxOptions)
+    w.config(width=25)
+    w.grid(column =1, row =0, sticky="ew")
+
+    Label(top, text="Działanie").grid(row=2, column=0)
+    actionType = StringVar(top)
+    actionType.set(OPTIONS[0])
+
+    Label(top, text="Nazwa").grid(row=3, column=0)
+    e1 = Entry(top)
+    e1.grid(row=3, column=1)
+    self.samplingVal = e1
+
+    self.otherActionWindow = top
+    self.otherActionType = actionType
+
+    self.selectedSignalForOtherAction = selected
+
+    w3= OptionMenu(top, actionType, *OPTIONS)
+    w3.config(width=25)
+    w3.grid(column = 1, row = 2, sticky="ew")
+
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_other_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
+
+
+  def signals_other_actions(self):
+    signalName = self.selectedSignalForOtherAction.get()
+    signal = self.signalsMap[signalName]
+    sampling_val = int(self.samplingVal.get())
+    result = None
+    label = ''
+    action = self.otherActionType.get()
+
+    if(action == u"Próbkowanie ZOH"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.zero_order_hold(sampled_signal, signal.t_values)
+
+
+
+
+
+
+
+
+
+      label = 'ZOH_' + signalName
+    elif(action == u"Próbkowanie FOH"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.zero_order_hold(sampled_signal, signal.t_values)
+      label = 'FOH_' + signalName
+    elif(action == u"Interpolacja w oparciu o sinus"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.sinc_interpolation(sampled_signal, signal.t_values)
+      label = 'interpolacja_sin_' + signalName
+    elif(action == u"Kwantyzacja"):
+      result = quantization.quantize_signal(signal)
+      label = "kwant_" + signalName
+    elif(action == u"Kwantyzacja z zaokr."):
+      result = round_quantize_signal(signal)
+      label = "kwant_zaokr_" + signalName
+
+    self.add_to_menu_grid(result, label)
 
   def set_top_pane_canvas(self, entries = None, canvasType = None, discret=False):
     top = self.TopPaneReference
@@ -283,8 +365,6 @@ class BasicView:
       row_number += 1
 
     Button(top, text='Dodaj', width=15, command=self.generate_signal).grid(row=row_number + 2, column=1, sticky=W, pady=4)
-
-
 
   def add_to_menu_grid(self, obj, label):
 
