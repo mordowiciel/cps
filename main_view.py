@@ -5,6 +5,8 @@ import tkMessageBox
 
 import matplotlib
 matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 import signal_generator as sig_gen
@@ -156,19 +158,10 @@ class BasicView:
     if(action == u"Próbkowanie ZOH"):
       sampled_signal = sampling.sample_signal(signal, sampling_val)
       result = sampling.zero_order_hold(sampled_signal, signal.t_values)
-
-
-
-
-
-
-
-
-
       label = 'ZOH_' + signalName
     elif(action == u"Próbkowanie FOH"):
       sampled_signal = sampling.sample_signal(signal, sampling_val)
-      result = sampling.zero_order_hold(sampled_signal, signal.t_values)
+      result = sampling.first_order_hold(sampled_signal, signal.t_values)
       label = 'FOH_' + signalName
     elif(action == u"Interpolacja w oparciu o sinus"):
       sampled_signal = sampling.sample_signal(signal, sampling_val)
@@ -179,6 +172,7 @@ class BasicView:
       label = "kwant_" + signalName
     elif(action == u"Kwantyzacja z zaokr."):
       result = round_quantize_signal(signal)
+      label = "kwant_" + signalName
       label = "kwant_zaokr_" + signalName
 
     self.add_to_menu_grid(result, label)
@@ -471,7 +465,8 @@ class BasicView:
   def draw_signal(self, signal, label = 'Signal'):
     if isinstance(signal, str):
       signal = self.signalsMap[signal]
-    entries = plot_u.plot_signal(signal, label)
+    # entries = plot_u.plot_signal(signal, label)
+    entries = [signal.t_values, signal.values]
     self.set_top_pane_canvas(entries, 'signal', signal.discret)
 
   def draw_histogram(self, signal, label = 'Histogram'):
