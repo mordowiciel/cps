@@ -5,7 +5,7 @@ import numpy as np
 def mse(quant_values, signal_values):
     mse_sum = 0.0
 
-    for n in range(len(quant_values)):
+    for n in range(len(quant_values)-1):
         mse_sum += pow(signal_values[n] - quant_values[n], 2)
 
     return (1.0 / len(quant_values)) * mse_sum
@@ -13,11 +13,11 @@ def mse(quant_values, signal_values):
 
 def snr(quant_values, signal_values):
     numerator_sum = 0.0
-    for n in range(len(quant_values)):
+    for n in range(len(quant_values)-1):
         numerator_sum += pow(quant_values[n], 2)
 
     denominator_sum = 0.0
-    for n in range(len(quant_values)):
+    for n in range(len(quant_values)-2):
         denominator_sum += pow(signal_values[n] - quant_values[n], 2)
 
     res = 10.0 * log10(numerator_sum / denominator_sum)
@@ -30,7 +30,7 @@ def psnr(quant_values, signal_values):
 
 def md(quant_values, signal_values):
     md_val = 0.0
-    for n in range(len(quant_values)):
+    for n in range(len(quant_values)-1):
         temp_md_val = abs(signal_values[n] - quant_values[n])
         if temp_md_val > md_val:
             md_val = temp_md_val

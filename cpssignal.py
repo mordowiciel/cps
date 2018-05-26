@@ -8,8 +8,9 @@ class CPSSignal:
     name = ""
     discret = False
     t_values = []
+    origin_signal = None
 
-    def __init__(self, name, t0, t1, sampling_freq, values, discret=False):
+    def __init__(self, name, t0, t1, sampling_freq, values, discret=False, origin_signal=None):
         self.t0 = t0
         self.t1 = t1
         self.sampling_freq = sampling_freq
@@ -17,3 +18,4 @@ class CPSSignal:
         self.name = name
         self.discret = discret
         self.t_values = np.arange(t0, t1 + 1.0 / sampling_freq, 1.0 / sampling_freq)
+        self.origin_signal = origin_signal

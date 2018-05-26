@@ -22,7 +22,7 @@ def quantize_signal(signal, bits_count):
         value = bins[index - 1]
         quantz_values[i] = value
 
-    return CPSSignal('quantize_signal', signal.t0, signal.t1, signal.sampling_freq, quantz_values)
+    return CPSSignal('quantize_signal', signal.t0, signal.t1, signal.sampling_freq, quantz_values, origin_signal=signal)
 
 
 def round_quantize_signal(signal, bits_count):
@@ -52,4 +52,4 @@ def round_quantize_signal(signal, bits_count):
 
         quantz_values[i] = (value + value2) / 2.0
 
-    return CPSSignal('quantize_signal', signal.t0, signal.t1, signal.sampling_freq, quantz_values)
+    return CPSSignal('quantize_signal', signal.t0, signal.t1, signal.sampling_freq, quantz_values, origin_signal=signal)

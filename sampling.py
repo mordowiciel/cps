@@ -4,7 +4,7 @@ import numpy as np
 
 def sample_signal(signal, sampling_val):
     new_values = signal.values[::sampling_val]
-    return CPSSignal(signal.name, signal.t0, signal.t1, signal.sampling_freq / sampling_val, new_values)
+    return CPSSignal(signal.name, signal.t0, signal.t1, signal.sampling_freq / sampling_val, new_values, origin_signal=signal)
 
 
 # TODO : dziwny bug do fixniecia
@@ -21,7 +21,7 @@ def zero_order_hold(sampled_signal, x_to_upsample):
 
     new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
 
-    return CPSSignal('zoh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
+    return CPSSignal('zoh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values, origin_signal=sampled_signal)
 
 
 def first_order_hold(sampled_signal, x_to_upsample):
@@ -37,7 +37,7 @@ def first_order_hold(sampled_signal, x_to_upsample):
 
     new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
 
-    return CPSSignal('foh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
+    return CPSSignal('foh_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values, origin_signal=sampled_signal)
 
 
 def sinc_interpolation(sampled_signal, x_to_upsample):
@@ -52,7 +52,7 @@ def sinc_interpolation(sampled_signal, x_to_upsample):
 
     new_sampling_freq = 1.0 / (x_to_upsample[1] - x_to_upsample[0])
 
-    return CPSSignal('sinc_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values)
+    return CPSSignal('sinc_' + sampled_signal.name, x_to_upsample[0], x_to_upsample[-1], new_sampling_freq, new_y_values, origin_signal=sampled_signal)
 
 
 def rect(t):

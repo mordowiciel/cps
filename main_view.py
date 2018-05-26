@@ -19,6 +19,7 @@ import signal_serializer as signal_serializer
 import number_parser as number_parser
 import sampling as sampling
 import quantization as quantization
+import sampling_quantz_util as sampling_quantz_util
 
 class BasicView:
   optionMenu = None
@@ -85,7 +86,9 @@ class BasicView:
     optionsMenu.add_separator()
 
     optionsMenu.add_command(label="Operacje mat. na sygnałach", command=self.init_signal_action)
-    optionsMenu.add_command(label="Pozostałe", command=self.init_other_actions)
+    optionsMenu.add_command(label="Rekonstrukcja sygnału CA", command=self.init_other_sampling_actions)
+    optionsMenu.add_command(label="Rekonstrukcja sygnału A/C", command=self.init_other_quantization_actions)
+
 
     optionsMenu.add_command(label="Wyjście", command=parent.quit)
     menubar.add_cascade(label="Opcje", menu=optionsMenu)
@@ -110,10 +113,49 @@ class BasicView:
     self.set_top_pane_canvas()
 
 
-  def init_other_actions(self):
+  def init_other_quantization_actions(self):
     OPTIONS = [
-      "Próbkowanie ZOH", "Próbkowanie FOH", "Interpolacja w oparciu o sinus",
-      "Kwantyzacja", "Kwantyzacja z zaokr."
+      "Kwantyzacja",
+      "Kwantyzacja z zaokr."
+    ]
+
+
+    listBoxOptions = list(self.ListBoxReference.get(0, END))
+    top = Toplevel()
+
+    Label(top, text="Sygnał").grid(row=0, column=0)
+    selected = StringVar(top)
+    selected.set(listBoxOptions[0])
+    w = OptionMenu(top, selected, *listBoxOptions)
+    w.config(width=25)
+    w.grid(column =1, row =0, sticky="ew")
+
+    Label(top, text="Działanie").grid(row=2, column=0)
+    actionType = StringVar(top)
+    actionType.set(OPTIONS[0])
+    option = actionType.get()
+
+    Label(top, text="Poziom").grid(row=3, column=0)
+    e1 = Entry(top)
+    e1.grid(row=3, column=1)
+    self.samplingVal = e1
+    self.otherActionWindow = top
+    self.otherActionType = actionType
+    self.selectedSignalForOtherAction = selected
+
+    w3= OptionMenu(top, actionType, *OPTIONS)
+    w3.config(width=25)
+    w3.grid(column = 1, row = 2, sticky="ew")
+
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_quantization_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
+
+
+
+  def init_other_sampling_actions(self):
+    OPTIONS = [
+      "Ekstrapolacja ZOH",
+      "Interpolacja FOH",
+      "Rekonstrukcja w oparciu o sinus"
     ]
 
     listBoxOptions = list(self.ListBoxReference.get(0, END))
@@ -129,10 +171,11 @@ class BasicView:
     Label(top, text="Działanie").grid(row=2, column=0)
     actionType = StringVar(top)
     actionType.set(OPTIONS[0])
+    option = actionType.get()
 
-    Label(top, text="Nazwa").grid(row=3, column=0)
+    Label(top, text="Gęstosc").grid(row=3, column=0)
     e1 = Entry(top)
-    e1.grid(row=3, column=1)
+    e1.place(x=70, y=47, width=250)
     self.samplingVal = e1
 
     self.otherActionWindow = top
@@ -143,11 +186,9 @@ class BasicView:
     w3= OptionMenu(top, actionType, *OPTIONS)
     w3.config(width=25)
     w3.grid(column = 1, row = 2, sticky="ew")
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_other_sampling_actions(), top.destroy()]).grid(row=5, column=1, padx=40, pady=20)
 
-    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_other_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
-
-
-  def signals_other_actions(self):
+  def signals_quantization_actions(self):
     signalName = self.selectedSignalForOtherAction.get()
     signal = self.signalsMap[signalName]
     sampling_val = int(self.samplingVal.get())
@@ -155,29 +196,43 @@ class BasicView:
     label = ''
     action = self.otherActionType.get()
 
-    if(action == u"Próbkowanie ZOH"):
-      sampled_signal = sampling.sample_signal(signal, sampling_val)
-      result = sampling.zero_order_hold(sampled_signal, signal.t_values)
-      label = 'ZOH_' + signalName
-    elif(action == u"Próbkowanie FOH"):
-      sampled_signal = sampling.sample_signal(signal, sampling_val)
-      result = sampling.first_order_hold(sampled_signal, signal.t_values)
-      label = 'FOH_' + signalName
-    elif(action == u"Interpolacja w oparciu o sinus"):
-      sampled_signal = sampling.sample_signal(signal, sampling_val)
-      result = sampling.sinc_interpolation(sampled_signal, signal.t_values)
-      label = 'interpolacja_sin_' + signalName
-    elif(action == u"Kwantyzacja"):
-      result = quantization.quantize_signal(signal)
-      label = "kwant_" + signalName
+    if(action == u"Kwantyzacja"):
+      result = quantization.quantize_signal(signal, sampling_val)
+      label = "kwant_" + signalName + "_" + str(sampling_val)
     elif(action == u"Kwantyzacja z zaokr."):
-      result = round_quantize_signal(signal)
-      label = "kwant_" + signalName
-      label = "kwant_zaokr_" + signalName
+      result = round_quantize_signal(signal. sampling_val)
+      label = "kwant_zaokr_" + signalName + "_" + str(sampling_val)
 
     self.add_to_menu_grid(result, label)
 
-  def set_top_pane_canvas(self, entries = None, canvasType = None, discret=False):
+
+
+
+
+  def signals_other_sampling_actions(self):
+    signalName = self.selectedSignalForOtherAction.get()
+    signal = self.signalsMap[signalName]
+    sampling_val = int(self.samplingVal.get())
+    result = None
+    label = ''
+    action = self.otherActionType.get()
+
+    if(action == u"Ekstrapolacja ZOH"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.zero_order_hold(sampled_signal, signal.t_values)
+      label = 'ZOH_' + signalName + "_" +  str(sampling_val)
+    elif(action == u"Interpolacja FOH"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.first_order_hold(sampled_signal, signal.t_values)
+      label = 'FOH_' + signalName + "_" + str(sampling_val)
+    elif(action == u"Rekonstrukcja w oparciu o sinus"):
+      sampled_signal = sampling.sample_signal(signal, sampling_val)
+      result = sampling.sinc_interpolation(sampled_signal, signal.t_values)
+      label = 'rekonstrukcja_sin_' + signalName + "_" + str(sampling_val)
+
+    self.add_to_menu_grid(result, label)
+
+  def set_top_pane_canvas(self, entries = None, canvasType = None, discret=False, signal=None):
     top = self.TopPaneReference
     for child in top.winfo_children():
       child.destroy()
@@ -201,6 +256,22 @@ class BasicView:
         Label(statsFrame, text="Wartość skuteczna: {0}".format(root_mean_sq).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=3)
         Label(statsFrame, text="Wariancja: {0}".format(variance).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=4)
         Label(statsFrame, text="Moc średnia: {0}".format(avg_power).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=5)
+
+
+      if (signal.origin_signal):
+
+        MSE = round(sampling_quantz_util.mse(signal.origin_signal.values, signal.values), 3)
+
+        SNR = round(sampling_quantz_util.snr(signal.origin_signal.values, signal.values), 3)
+
+        PSNR = round(sampling_quantz_util.psnr(signal.origin_signal.values, signal.values),3 )
+
+        MD = round(sampling_quantz_util.md(signal.origin_signal.values, signal.values),3)
+
+        Label(statsFrame, text="Błąd sredniokwadratowy: {0}".format(MSE).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=6)
+        Label(statsFrame, text="Stosunek sygnał - szum: {0}".format(SNR).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=7)
+        Label(statsFrame, text="Szczytowy stosunek sygnał - szum: {0}".format(PSNR).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=8)
+        Label(statsFrame, text="Maksymalna róznica: {0}".format(MD).replace(")", "").replace("(", "").replace("+0j", "")).grid(row=9)
 
     f = Figure(figsize=(5,5), dpi=100)
     canvas = FigureCanvasTkAgg(f,  top)
@@ -300,8 +371,6 @@ class BasicView:
       self.dEntry = e4
       e4.grid(row=row_number, column=1)
       row_number += 1
-
-
 
     if (5 in options[unicode(option)]):
       Label(top, text="Okres podstawowy").grid(row= row_number)
@@ -449,7 +518,7 @@ class BasicView:
         signal = sig_gen.square(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
       elif option == "prostoktny symetryczny":
         signal = sig_gen.square_symmetrical(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
-      elif option == "trójktny":
+      elif option == "trjktny":
         signal = sig_gen.triangular(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), T=number_parser.parse(self.TEntry.get()), kW=number_parser.parse(self.KwEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()))
       elif option == "skok jednostkowy":
         signal = sig_gen.step_function(name = self.nameEntry.get(), A=number_parser.parse(self.amplitudeEntry.get()), t1 = number_parser.parse(self.t1Entry.get()), d =number_parser.parse(self.dEntry.get()), sampling_freq=number_parser.parse(self.sampFreqEntry.get()), tS=number_parser.parse(self.tsEntry.get()))
@@ -467,7 +536,11 @@ class BasicView:
       signal = self.signalsMap[signal]
     # entries = plot_u.plot_signal(signal, label)
     entries = [signal.t_values, signal.values]
-    self.set_top_pane_canvas(entries, 'signal', signal.discret)
+
+    print "RYSUJE"
+    print signal
+    print signal.origin_signal
+    self.set_top_pane_canvas(entries, 'signal', signal.discret, signal=signal)
 
   def draw_histogram(self, signal, label = 'Histogram'):
     if isinstance(signal, str):
@@ -490,7 +563,8 @@ class BasicView:
     # signals = self.signalsMap.values()
     # for signal in signals:
     signal = self.signalsMap[self.ListBoxReference.get(ACTIVE)]
-    signal_serializer.serialize_signal(signal, signal.name)
+    signalName = str(self.ListBoxReference.get(ACTIVE))
+    signal_serializer.serialize_signal(signal, signalName)
 
   def deserialize_signals(self):
     signals = signal_serializer.deserialize_signals()

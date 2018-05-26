@@ -17,6 +17,7 @@ def deserialize_signals():
     for filename in os.listdir(path):
         bin_file = open('bin/' + filename, mode='rb')
         sig = pickle.load(bin_file)
+        sig.name = filename.split('.', 1)[0]
         signals.append(sig)
         bin_file.close()
     return signals
