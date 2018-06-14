@@ -4,6 +4,7 @@ import numpy as np
 class CPSSignal:
     t0 = 0
     sampling_freq = 1
+    T = 1
     values = []
     name = ""
     discret = False
