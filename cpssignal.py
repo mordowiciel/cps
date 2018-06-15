@@ -3,6 +3,7 @@ import numpy as np
 
 class CPSSignal:
     t0 = 0
+    t1 = 0
     sampling_freq = 1
     T = 1
     values = []
@@ -18,5 +19,6 @@ class CPSSignal:
         self.values = values
         self.name = name
         self.discret = discret
-        self.t_values = np.arange(t0, t1 + 1.0 / sampling_freq, 1.0 / sampling_freq)
+        # self.t_values = np.arange(t0, t1 + 1.0 / sampling_freq, 1.0 / sampling_freq)
+        self.t_values = np.linspace(t0, t1, len(values))
         self.origin_signal = origin_signal

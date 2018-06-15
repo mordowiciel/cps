@@ -1,87 +1,103 @@
 import numpy as np
+import convolution
+from cpssignal import CPSSignal
+from filter_utils import *
 
 
-def calculate_impulse_response(n, k, m):
-    if n == ((m - 1) / 2.0):
-        return 2.0 / m
-    else:
-        numerator = np.sin((2.0 * np.pi * (n - ((m - 1) / 2.0)) / k))
-        denominator = np.pi * (n - ((m - 1) / 2.0))
-        return numerator / denominator
+def filtered_blackman_lowpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_lowpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(blackman_window_response(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def rectangular_window_response(n, k, m):
-    return calculate_impulse_response(n, k, m)
+def filtered_blackman_bandpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_bandpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_blackman_window_response_bandpass(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def calculate_K_for_lowpass(sampling_frequency, cutoff_frequency):
-    return sampling_frequency / cutoff_frequency
+def filtered_blackman_highpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_highpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_blackman_window_response_highpass(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def calculate_K_for_bandpass(sampling_frequency, cutoff_frequency):
-    temp_cutoff_freq = cutoff_frequency / 4 - sampling_frequency
-    return sampling_frequency / temp_cutoff_freq
+def filtered_hamming_lowpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_lowpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(hamming_window_response(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def calculate_K_for_highpass(sampling_frequency, cutoff_frequency):
-    temp_cutoff_freq = sampling_frequency / 2 - cutoff_frequency
-    return sampling_frequency / temp_cutoff_freq
+def filtered_hamming_bandpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_bandpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_hamming_window_response_bandpass(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def hamming_window_response(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_hamming_value(n, m)
+def filtered_hamming_highpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_highpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_hamming_window_response_highpass(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def hanning_window_response(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_hanning_value(n, m)
+def filtered_hanning_lowpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_lowpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(hanning_window_response(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def blackman_window_response(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_blackman_value(n, m)
+def filtered_hanning_bandpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_bandpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_hanning_window_response_bandpass(i, K, num_of_coefficients))
+
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
 
 
-def calculate_hamming_window_response_bandpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_bandpass(n) * calculate_hamming_value(n, m)
+def filtered_hanning_highpass(sig, cutoff_frequency, num_of_coefficients):
+    K = calculate_K_for_highpass(sig.sampling_freq, cutoff_frequency)
+    window_impulse_response = []
+    for i in range(0, num_of_coefficients):
+        window_impulse_response.append(calculate_hanning_window_response_highpass(i, K, num_of_coefficients))
 
-
-def calculate_hanning_window_response_bandpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_bandpass(n) * calculate_hanning_value(n, m)
-
-
-def calculate_blackman_window_response_bandpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_bandpass(n) * calculate_blackman_value(n, m)
-
-
-def calculate_hamming_window_response_highpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_high_pass(n) * calculate_hamming_value(n, m)
-
-
-def calculate_hanning_window_response_highpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_high_pass(n) * calculate_hanning_value(n, m)
-
-
-def calculate_blackman_window_response_highpass(n, k, m):
-    return calculate_impulse_response(n, k, m) * calculate_high_pass(n) * calculate_blackman_value(n, m)
-
-
-def calculate_bandpass(n):
-    return 2 * np.sin(np.pi * n / 2)
-
-
-def calculate_high_pass(n):
-    if n % 2 == 0:
-        return 1
-    else:
-        return -1
-
-
-def calculate_hamming_value(n, m):
-    return 0.53836 - 0.46164 * np.cos(2.0 * np.pi * n / m)
-
-
-def calculate_hanning_value(n, m):
-    return 0.5 - 0.5 * np.cos(2.0 * np.pi * n / m)
-
-
-def calculate_blackman_value(n, m):
-    return 0.42 - 0.5 * np.cos(2.0 * np.pi * n / m) + 0.08 * np.cos(4.0 * np.pi * n / m)
+    window_impulse_response = np.array(window_impulse_response)
+    conv_arr = convolution.calculate_convolution_arr(window_impulse_response, sig.values)
+    return CPSSignal('filtered', sig.t0, sig.t1, sig.sampling_freq, conv_arr)
