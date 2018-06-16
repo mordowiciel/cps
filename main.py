@@ -16,12 +16,12 @@ import correlation
 # ### SPLOT SYGNALOW ###
 #
 # sig_sin = full_wave_rect_sine('sine', 5, 1, 0, 10, 10000)
-# sig_square = square('square', 5, 1, 0.5, 0, 10, 10000)
+# sig_square = squi are('square', 5, 1, 0.5, 0, 10, 10000)
 # sig_conv = convolution.calculate_convolution(sig_sin, sig_square)
-#
-# plt.plot(sig_conv.t_values, sig_conv.values, color="blue")
-# plt.xlabel('time (t)')
-# plt.ylabel('value (y)')
+
+# plt.plot(sig_conv.t_values, sig_conv.values)
+# plt.xlabel('czas (t)')
+# plt.ylabel('wartosc (y)')
 # plt.title('chuj')
 # plt.grid(True)
 # plt.show()
@@ -29,34 +29,35 @@ import correlation
 # # ### FILTROWANIE SYGNALU ###
 # sig_sin = sine('sine', 5, 1, 0, 10, 10000)
 # filtered_sig = filter.filtered_hanning_lowpass(sig_sin, 1000, 10)
-#
-# plt.plot(sig_sin.t_values, sig_sin.values, color="blue")
-# plt.xlabel('time (t)')
-# plt.ylabel('value (y)')
-# plt.title('chuj')
-# plt.grid(True)
-#
+# #
+# # plt.plot(sig_sin.t_values, sig_sin.values, color="blue")
+# # plt.xlabel('time (t)')
+# # plt.ylabel('value (y)')
+# # plt.title('chuj')
+# # plt.grid(True)
+# #
 # plt.plot(filtered_sig.t_values, filtered_sig.values, color="green")
 # plt.xlabel('time (t)')
 # plt.ylabel('value (y)')
 # plt.title('chuj')
 # plt.grid(True)
 # plt.show()
-#
+# #
 # KORELACJA SYGNALU #
 
 # sig_sin = square('sine', 5, 1, 0.1, 0, 10, 50)
 # sig_trian = triangular('trian', 5, 1, 0.5, 0, 10, 50)
-#
+# # #
 # sig_corr_conv = correlation.calculate_correlation_by_convolution(sig_sin, sig_trian)
-# sig_corr_classic = correlation.calculate_classic_correlation(sig_sin, sig_trian)
-#
+# # sig_corr_classic = correlation.calculate_classic_correlation(sig_sin, sig_trian)
+
 # plt.figure()
 # plt.plot(sig_sin.t_values, sig_sin.values, color="green")
-# plt.xlabel('time (t)')
+# plt.xlabel('czas (t)')
 # plt.ylabel('value (y)')
-# plt.title('chuj')
+# plt.title('dab')
 # plt.grid(True)
+# plt.show()
 #
 # plt.plot(sig_trian.t_values, sig_trian.values, color="blue")
 # plt.xlabel('time (t)')
@@ -79,7 +80,7 @@ import correlation
 # plt.grid(True)
 # plt.show()
 
-# basicView = BasicView()
+basicView = BasicView()
 # 10000 probek
 # signal = sine('sine', 5, 1, 0, 10, 10000)
 # #

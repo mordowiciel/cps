@@ -20,6 +20,9 @@ import number_parser as number_parser
 import sampling as sampling
 import quantization as quantization
 import sampling_quantz_util as sampling_quantz_util
+import correlation
+import convolution
+import filter as filter
 
 class BasicView:
   optionMenu = None
@@ -48,6 +51,8 @@ class BasicView:
   samplingVal = None
   selectedSignalForOtherAction = None
   selectedSignalsForAction = []
+  cutoffFrequencyVal = None
+  numOfCoefficients = None
 
   FUNC_OPTIONS = {
     1: "szum o rozkładzie jednostajnym",
@@ -85,10 +90,10 @@ class BasicView:
 
     optionsMenu.add_separator()
 
-    optionsMenu.add_command(label="Operacje mat. na sygnałach", command=self.init_signal_action)
-    optionsMenu.add_command(label="Rekonstrukcja sygnału CA", command=self.init_other_sampling_actions)
+    optionsMenu.add_command(label="Operacje na sygnałach", command=self.init_signal_action)
+    optionsMenu.add_command(label="Rekonstrukcja sygnału C/A", command=self.init_other_sampling_actions)
     optionsMenu.add_command(label="Rekonstrukcja sygnału A/C", command=self.init_other_quantization_actions)
-
+    optionsMenu.add_command(label="Filtry", command=self.init_filters)
 
     optionsMenu.add_command(label="Wyjście", command=parent.quit)
     menubar.add_cascade(label="Opcje", menu=optionsMenu)
@@ -112,6 +117,94 @@ class BasicView:
 
     self.set_top_pane_canvas()
 
+
+  def init_filters(self):
+    OPTIONS = [
+      "Filtr Blackmana dolnoprzepustowy",
+      "Filtr Blackmana srednioprzepustowy",
+      "Filtr Blackmana gornoprzepustowy",
+      "Filtr Hamminga dolnoprzepustowy",
+      "Filtr Hamminga srednioprzepustowy",
+      "Filtr Hamminga gornoprzepustowy",
+      "Filtr Hanninga dolnoprzepustowy",
+      "Filtr Hanninga srednioprzepustowy",
+      "Filtr Hanninga gornoprzepustowy"
+    ]
+
+    listBoxOptions = list(self.ListBoxReference.get(0, END))
+    top = Toplevel()
+
+    Label(top, text="Sygnał").grid(row=0, column=0)
+    selected = StringVar(top)
+    selected.set(listBoxOptions[0])
+    w = OptionMenu(top, selected, *listBoxOptions)
+    w.config(width=25)
+    w.grid(column =1, row =0, sticky="ew")
+
+    Label(top, text="Filtr").grid(row=2, column=0)
+    actionType = StringVar(top)
+    actionType.set(OPTIONS[0])
+    option = actionType.get()
+
+    Label(top, text="Czestotliwosc").grid(row=3, column=0)
+    e1 = Entry(top)
+    e1.grid(row=3, column=1)
+    self.cutoffFrequencyVal = e1
+
+    Label(top, text="Ilosc wspolczynnikow").grid(row=4, column=0)
+    e2 = Entry(top)
+    e2.grid(row=4, column=1)
+
+    self.numOfCoefficients = e2
+
+    self.otherActionWindow = top
+    self.otherActionType = actionType
+    self.selectedSignalForOtherAction = selected
+
+    w3= OptionMenu(top, actionType, *OPTIONS)
+    w3.config(width=25)
+    w3.grid(column = 1, row = 2, sticky="ew")
+
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.filter_actions(), top.destroy()]).grid(row=5, column=1, sticky=W)
+
+  def filter_actions(self):
+    signalName = self.selectedSignalForOtherAction.get()
+    signal = self.signalsMap[signalName]
+    cutoff = int(self.cutoffFrequencyVal.get())
+    coefficients = int(self.numOfCoefficients.get())
+    result = None
+    label = ''
+    action = self.otherActionType.get()
+
+    if(action == u"Filtr Blackmana dolnoprzepustowy"):
+      result = filter.filtered_blackman_lowpass(signal, cutoff, coefficients)
+      label = "blackman_l_" + signalName
+    elif(action == u"Filtr Blackmana srednioprzepustowy"):
+      result = filter.filtered_blackman_bandpass(signal, cutoff, coefficients)
+      label = "blackman_b_" + signalName
+    elif(action == u"Filtr Blackmana gornoprzepustowy"):
+      result = filter.filtered_blackman_highpass(signal, cutoff, coefficients)
+      label = "blackman_h_" + signalName
+    elif(action == u"Filtr Hamminga dolnoprzepustowy"):
+      result = filter.filtered_hamming_lowpass(signal, cutoff, coefficients)
+      label = "hamming_l" + signalName
+    elif(action == u"Filtr Hamminga srednioprzepustowy"):
+      result = filter.filtered_blackman_bandpass(signal, cutoff, coefficients)
+      label = "hamming_b_" + signalName
+    elif(action == u"Filtr Hamminga gornoprzepustowy"):
+      result = filter.filtered_hamming_highpass(signal, cutoff, coefficients)
+      label = "hamming_h_" + signalName
+    elif(action == u"Filtr Hanninga dolnoprzepustowy"):
+      result = filter.filtered_hanning_lowpass(signal, cutoff, coefficients)
+      label = "hanning_l_" + signalName
+    elif(action == u"Filtr Hanninga srednioprzepustowy"):
+      result = filter.filtered_hanning_bandpass(signal, cutoff, coefficients)
+      label = "hanning_b_" + signalName
+    elif(action == u"Filtr Hanninga gornoprzepustowy"):
+      result = filter.filtered_hanning_highpass(signal, cutoff, coefficients)
+      label = "hanning_h_" + signalName
+
+    self.add_to_menu_grid(result, label)
 
   def init_other_quantization_actions(self):
     OPTIONS = [
@@ -147,9 +240,7 @@ class BasicView:
     w3.config(width=25)
     w3.grid(column = 1, row = 2, sticky="ew")
 
-    Button(top, text='Wykonaj', width=15, command=lambda: [self.signals_quantization_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
-
-
+    Button(top, text='Wykonaj', width=15, command=lambda: [self.filter_actions(), top.destroy()]).grid(row=4, column=1, sticky=W)
 
   def init_other_sampling_actions(self):
     OPTIONS = [
@@ -204,9 +295,6 @@ class BasicView:
       label = "kwant_zaokr_" + signalName + "_" + str(sampling_val)
 
     self.add_to_menu_grid(result, label)
-
-
-
 
 
   def signals_other_sampling_actions(self):
@@ -440,7 +528,10 @@ class BasicView:
       "Dodaj",
       "Odejmij",
       "Pomnóż",
-      "Podziel"
+      "Podziel",
+      "Korelacja(splot)",
+      "Korelacja",
+      "Splot"
     ]
 
     listBoxOptions = list(self.ListBoxReference.get(0, END))
@@ -497,6 +588,17 @@ class BasicView:
     elif(self.actionType.get() == "Podziel"):
       result = signal_operations.divide_signals(signal1, signal2)
       label = signal1.name + "/" + signal2.name
+    elif(self.actionType.get() == "Korelacja(splot)"):
+      result = correlation.calculate_correlation_by_convolution(signal1, signal2)
+      label = signal1.name + "_kor_splot_" + signal2.name
+    elif(self.actionType.get() == "Korelacja"):
+      result = correlation.calculate_classic_correlation(signal1, signal2)
+      label = signal1.name + "_korelacja_" + signal2.name
+    elif(self.actionType.get() == "Splot"):
+      result = convolution.calculate_convolution(signal1, signal2)
+      label = signal1.name + "_splot_" + signal2.name
+
+
 
     self.add_to_menu_grid(result, label)
 
